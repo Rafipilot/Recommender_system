@@ -6,20 +6,14 @@ Thank you for your curiosity!
 """
 
 
-## // Basic Clam -- Reference Design #0
+## // Basic Recommender  -- Reference Design #0
 # 
-# Our simplest Agent, our 'hello, world.'
-#
-# For interactive visual representation of this Arch:
-#    https://miro.com/app/board/uXjVM_kESvI=/?share_link_id=72701488535
-#
-# Cutomize and upload this Arch to our API to create Agents: https://docs.aolabs.ai/reference/kennelcreate
-#
 
 
-description = "Basic Clam"
-arch_i = [1, 1, 1]     # 3 neurons, 1 in each of 3 channels, corresponding to Food, Chemical-A, Chemical-B (present=1/not=0)
-arch_z = [1]           # corresponding to Open=1/Close=0
+
+description = "Recommender system"
+arch_i = [1, 1, 1]     # 3 neurons, 1 in each of 3 channels, corresponding to genre, intrest, time (correct=1/not=0)
+arch_z = [1]           # corresponding to recommend/ not recommend
 arch_c = [1]           # adding 1 control neuron which we'll define with the instinct control function below
 connector_function = "full_conn"
 
