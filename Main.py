@@ -6,7 +6,7 @@ Thank you for your curiosity!
 """
 
 
-## // Basic Clam -- Reference Design #0
+## // Basic Recommender  -- Reference Design #0
 # 
 # Our simplest Agent, our 'hello, world.'
 #
@@ -17,7 +17,7 @@ Thank you for your curiosity!
 #
 
 
-description = "Recommender_system"
+description = "Basic Clam"
 arch_i = [1, 1, 1]     # 3 neurons, 1 in each of 3 channels, corresponding to Food, Chemical-A, Chemical-B (present=1/not=0)
 arch_z = [1]           # corresponding to Open=1/Close=0
 arch_c = [1]           # adding 1 control neuron which we'll define with the instinct control function below
