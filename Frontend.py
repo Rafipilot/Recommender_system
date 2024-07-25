@@ -4,7 +4,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import creds 
 
 
-#openai.api_key = creds.api_key
+openai.api_key = creds.api_key
 
 def summarize_text(text):
     response = openai.chat.completions.create(
