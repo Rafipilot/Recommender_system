@@ -8,7 +8,7 @@ openai.api_key = creds.api_key
 
 def summarize_text(text):
     response = openai.chat.completions.create(
-        model="gpt-3.5-turbo",  # or use "gpt-4" if you have access
+        model="gpt-3.5-turbo",  
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": f"what is the genre of the video in one or two words:\n\n{text}"}
