@@ -1,17 +1,21 @@
 import streamlit as st
 import openai
 from youtube_transcript_api import YouTubeTranscriptApi
+import creds 
 
-# Set up OpenAI API key
-openai.api_key = 'your_openai_api_key'
+
+#openai.api_key = creds.api_key
 
 def summarize_text(text):
-    response = openai.Completion.create(
-        engine="davinci",  # or use "gpt-4" if you have access
-        prompt=f"Summarize the following text:\n\n{text}",
-        max_tokens=150  # adjust based on how concise you want the summary
+    response = openai.chat.completions.create(
+        model="gpt-3.5-turbo",  # or use "gpt-4" if you have access
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": f"what is the genre of the video in one or two words:\n\n{text}"}
+        ],
+        max_tokens=10  # adjust based on how concise you want the summary
     )
-    summary = response.choices[0].text.strip()
+    summary = response.choices[0].message.content
     return summary
 
 def get_transcript(video_id):
@@ -51,8 +55,12 @@ if st.button("RUN"):
             transcript = get_transcript(video_id)
             st.session_state.transcripts[video_id] = transcript  # Save transcript
             # Display results
-            st.write(f"Transcript for video ID {video_id}:")
-            st.write(transcript)
+            #st.write(f"Transcript for video ID {video_id}:")
+            #st.write(transcript)
+            st.write("Summarizing")
+            summary = summarize_text(transcript)
+            st.write(f"Summary for video ID {video_id}:")
+            st.write(summary)
         except Exception as e:
             st.write(f"An error occurred for video ID {video_id}: {e}")
 
@@ -61,7 +69,6 @@ if st.button("RESET"):
     st.session_state.links = []  # Clear the links list
     st.session_state.transcripts = {}  # Clear the transcripts dictionary
     st.write("All data has been reset.")
-
 
 
 
