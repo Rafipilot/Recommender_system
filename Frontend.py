@@ -2,7 +2,7 @@ import streamlit as st
 import openai
 from youtube_transcript_api import YouTubeTranscriptApi
 import creds 
-
+import re
 
 openai.api_key = creds.api_key
 
@@ -13,7 +13,7 @@ def summarize_text(text):
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": f"what is the genre of the video in one or two words:\n\n{text}"}
         ],
-        max_tokens=10  # adjust based on how concise you want the summary
+        max_tokens=10  # adjust based on how concise we want the summary
     )
     summary = response.choices[0].message.content
     return summary
@@ -23,6 +23,21 @@ def get_transcript(video_id):
     full_transcript = ' '.join([entry['text'] for entry in transcript])
     return full_transcript
 
+def get_youtube_video_id(url):
+    # Define the regular expression pattern to match YouTube URLs
+    pattern = re.compile(
+        r'(https?://)?(www\.)?'
+        '(youtube|youtu|youtube-nocookie)\.(com|be)/'
+        '(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})')
+
+    # Use the pattern to search the URL
+    match = pattern.search(url)
+    
+    # If a match is found, return the video ID
+    if match:
+        return match.group(6)
+    return None
+
 # Initialize session state for links if it doesn't exist
 if 'links' not in st.session_state:
     st.session_state.links = []  # Creating the array of links the user "likes"
@@ -31,48 +46,52 @@ if 'links' not in st.session_state:
 if 'transcripts' not in st.session_state:
     st.session_state.transcripts = {}  # Storing transcripts with video ID as key
 
-# Set the title of the app
-st.title('Recommender System')
+st.title('Recommender System', anchor='center')
 
-# Create a text input
-user_input = st.text_input('Enter a YouTube ID for the video that you like:')
+# Create columns
+main_col, vid_col = st.columns([1, 3])
 
-# Handle adding the new link
-if user_input:
-    if user_input not in st.session_state.links:
-        st.session_state.links.append(user_input)
-    st.write('You entered:', user_input)
+with main_col:
+    # Create a text input
+    user_input = st.text_input('Enter a YouTube URL for the video that you like:')
 
-# Display the list of links
-st.write('All YouTube IDs:', st.session_state.links)
+    # Handle adding the new link
+    if user_input:
+        VID = get_youtube_video_id(user_input)
+        if VID and VID not in st.session_state.links:
+            st.session_state.links.append(VID)
+        st.write('You entered:', VID)
 
-# Handle the RUN button
-if st.button("RUN"):
-    st.write("Running")
-    for video_id in st.session_state.links:
-        try:
-            # Fetch transcript
-            transcript = get_transcript(video_id)
-            st.session_state.transcripts[video_id] = transcript  # Save transcript
-            # Display results
-            #st.write(f"Transcript for video ID {video_id}:")
-            #st.write(transcript)
-            st.write("Summarizing")
-            summary = summarize_text(transcript)
-            st.write(f"Summary for video ID {video_id}:")
-            st.write(summary)
-        except Exception as e:
-            st.write(f"An error occurred for video ID {video_id}: {e}")
+    # Display the list of links
+    st.write('All YouTube IDs:', st.session_state.links)
 
-# Handle the RESET button
-if st.button("RESET"):
-    st.session_state.links = []  # Clear the links list
-    st.session_state.transcripts = {}  # Clear the transcripts dictionary
-    st.write("All data has been reset.")
+    # Handle the RUN button
+    if st.button("RUN"):
+        st.write("Running")
+        for video_id in st.session_state.links:
+            try:
+                # Fetch transcript
+                transcript = get_transcript(video_id)
+                st.session_state.transcripts[video_id] = transcript  # Save transcript
+                st.write("Summarizing")
+                summary = summarize_text(transcript)
+                st.write(f"Summary for video ID {video_id}:")
+                st.write(summary)
+            except Exception as e:
+                st.write(f"An error occurred for video ID {video_id}: {e}")
 
+    # Handle the RESET button
+    if st.button("RESET"):
+        st.session_state.links = []  # Clear the links list
+        st.session_state.transcripts = {}  # Clear the transcripts dictionary
+        st.write("All data has been reset.")
 
-
-
+with vid_col:
+    # Example video
+    VIDEO_URL = "https://www.youtube.com/watch?v=Vn_9lVvMkX4&ab_channel=SkyNews"
+    st.video(VIDEO_URL)
+    st.button("Like")
+    st.button("Dislike")
 
 
 
