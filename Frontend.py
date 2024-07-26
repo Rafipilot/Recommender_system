@@ -4,6 +4,8 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import creds 
 import re
 
+st.set_page_config(page_title="DemoRS", layout="wide")
+
 openai.api_key = creds.api_key
 
 def summarize_text(text):
@@ -11,7 +13,7 @@ def summarize_text(text):
         model="gpt-3.5-turbo",  
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"what is the genre of the video in one or two words:\n\n{text}"}
+            {"role": "user", "content": f"what is the genre of the video in one or two words, making it easy for a program to take your output and use it as an input:\n\n{text}"}
         ],
         max_tokens=10  # adjust based on how concise we want the summary
     )
@@ -49,7 +51,7 @@ if 'transcripts' not in st.session_state:
 st.title('Recommender System', anchor='center')
 
 # Create columns
-main_col, vid_col = st.columns([1, 3])
+main_col, vid_col = st.columns([1, 1.25])
 
 with main_col:
     # Create a text input
@@ -88,10 +90,13 @@ with main_col:
 
 with vid_col:
     # Example video
+    R, l = st.columns([1, 20])
     VIDEO_URL = "https://www.youtube.com/watch?v=Vn_9lVvMkX4&ab_channel=SkyNews"
     st.video(VIDEO_URL)
-    st.button("Like")
-    st.button("Dislike")
+    with R:
+        st.button("Like")
+    with l:    
+        st.button("Dislike")
 
 
 
